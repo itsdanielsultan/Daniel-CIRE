@@ -1671,6 +1671,13 @@ const PARENT={map:"home",lesson:"map",chapend:"map",cards:"home",cardrun:"cards"
   drill:"home",drillrun:"drill",drillres:"drill",speed:"home",speedrun:"speed",speedres:"speed",
   exam:"home",examrun:"exam",examres:"exam",examreview:"examres",
   stats:"home",glossary:"home",settings:"home",mistakes:"stats",starred:"stats"};
+const NAVIDS={};
+NAV.forEach(function(n){ NAVIDS[n[0]]=1; });
+function section(v){
+  var seen=0;
+  while(v && !NAVIDS[v] && seen++<8) v=PARENT[v];
+  return NAVIDS[v]?v:"home";
+}
 function go(v){
   ({home:renderHome,map:renderMap,cards:renderCardsStart,drill:renderDrillStart,
     speed:renderSpeedStart,exam:renderExamStart,stats:renderStats,glossary:renderGlossary,
@@ -1702,8 +1709,10 @@ function chrome(o){
     paintStar(o);
     bStar.onclick=dStar.onclick=function(){ o.toggleStar(); paintStar(o); };
   } else { bStar.onclick=dStar.onclick=null; }
+  const cur=section(view);
   navEl.innerHTML=NAV.map(function(n){
-    return '<button class="navitem'+(n[0]===view||PARENT[view]===n[0]?" on":"")+'" data-nav="'+n[0]+'"><i></i>'+n[1]+'</button>';
+    return '<button class="navitem'+(n[0]===cur?" on":"")+'" data-nav="'+n[0]+'"'+
+      (n[0]===cur?' aria-current="page"':'')+'><i></i>'+n[1]+'</button>';
   }).join("");
   navEl.querySelectorAll("[data-nav]").forEach(function(b){
     b.addEventListener("click",function(){ stopTimer(); go(b.dataset.nav); toTop(); });
