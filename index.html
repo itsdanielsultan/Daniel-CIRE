@@ -384,7 +384,15 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   .band{display:none;}
   .main{border-left:0;}
   .pane{max-width:calc(820px * var(--s));margin:0 auto;padding:0;
-    border-left:1px solid var(--hair);border-right:1px solid var(--hair);min-height:100vh;min-height:100dvh;}
+    border-left:1px solid var(--hair);border-right:1px solid var(--hair);
+    min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;}
+  .pane > main{flex:1 1 auto;display:flex;flex-direction:column;}
+  .colophon{margin-top:auto;}
+  /* the two columns run to the same depth, so the rule between them
+     reaches the foot of the page instead of stopping mid-air */
+  .cols{align-items:stretch;flex:1 1 auto;}
+  .cols > .colA,.cols > .colB{display:flex;flex-direction:column;}
+  .cols > .colA > .block:last-child,.cols > .colB > :last-child{flex:1 1 auto;}
   body.split .pane{max-width:calc(1180px * var(--s));}
   .desktopbar{max-width:calc(820px * var(--s));margin:0 auto;}
   body.split .desktopbar{max-width:calc(1180px * var(--s));}
@@ -394,7 +402,7 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
     border-left:1px solid var(--hair);border-right:1px solid var(--hair);}
   body.split .foot-band{max-width:calc(1180px * var(--s));}
   .readstage{min-height:26vh;padding:40px 22px 34px;}
-  .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;}
+  .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
   .cols > .colA,.cols > .colB{min-width:0;}
   .cols > .colA{border-right:1px solid var(--hair);}
   .cols > .colA > .block:last-child{border-bottom:0;}
