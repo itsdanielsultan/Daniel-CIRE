@@ -432,6 +432,15 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
     min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;}
   .pane > main{flex:1 1 auto;display:flex;flex-direction:column;}
   .colophon{margin-top:auto;}
+  /* Settings is a finite form, not a full-height study surface. Keep its
+     footer attached to the final control instead of stretching empty space. */
+  body.settings-page .pane{
+    --desktopbar-height:calc(30px + 21px * var(--s));
+    min-height:calc(100vh - var(--desktopbar-height));
+    min-height:calc(100dvh - var(--desktopbar-height));
+  }
+  body.settings-page .pane > main{flex:0 0 auto;}
+  body.settings-page .colophon{margin-top:0;}
   /* the two columns run to the same depth, so the rule between them
      reaches the foot of the page instead of stopping mid-air */
   .cols{align-items:stretch;flex:1 1 auto;}
@@ -1867,6 +1876,7 @@ function paintStar(o){
 }
 function chrome(o){
   o=o||{};
+  document.body.classList.toggle("settings-page",view==="settings");
   if(view!==lastView){ enterAnim(); lastView=view; }
   bName.textContent=o.title||"CIRE";
   dTitle.textContent=o.title||"CIRE";
