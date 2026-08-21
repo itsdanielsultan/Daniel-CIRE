@@ -43,6 +43,7 @@ body.dark{
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
 html{-webkit-text-size-adjust:100%;background:var(--bg);scroll-padding-top:calc(74px * var(--s));}
+html.dark{background:#111315;color-scheme:dark;}
 body{
   overflow-x:hidden;
   background:var(--bg); color:var(--fg);
@@ -429,18 +430,12 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   .main{border-left:0;}
   .pane{max-width:calc(820px * var(--s));margin:0 auto;padding:0;
     border-left:1px solid var(--hair);border-right:1px solid var(--hair);
-    min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;}
-  .pane > main{flex:1 1 auto;display:flex;flex-direction:column;}
-  .colophon{margin-top:auto;}
-  /* Settings is a finite form, not a full-height study surface. Keep its
-     footer attached to the final control instead of stretching empty space. */
-  body.settings-page .pane{
     --desktopbar-height:calc(30px + 21px * var(--s));
     min-height:calc(100vh - var(--desktopbar-height));
     min-height:calc(100dvh - var(--desktopbar-height));
-  }
-  body.settings-page .pane > main{flex:0 0 auto;}
-  body.settings-page .colophon{margin-top:0;}
+    display:flex;flex-direction:column;}
+  .pane > main{flex:1 1 auto;display:flex;flex-direction:column;}
+  .colophon{margin-top:auto;padding-bottom:15px;}
   /* the two columns run to the same depth, so the rule between them
      reaches the foot of the page instead of stopping mid-air */
   .cols{align-items:stretch;flex:1 1 auto;}
@@ -1711,6 +1706,7 @@ function effectiveScale(){
 }
 function applySettings(){
   document.body.classList.toggle("dark",!!S.set.dark);
+  document.documentElement.classList.toggle("dark",!!S.set.dark);
   const themeMeta=document.querySelector('meta[name="theme-color"]');
   if(themeMeta) themeMeta.setAttribute("content",S.set.dark?"#111315":"#FFFFFF");
   document.body.classList.remove("ts0","ts1","ts2","ts3");
@@ -1876,7 +1872,6 @@ function paintStar(o){
 }
 function chrome(o){
   o=o||{};
-  document.body.classList.toggle("settings-page",view==="settings");
   if(view!==lastView){ enterAnim(); lastView=view; }
   bName.textContent=o.title||"CIRE";
   dTitle.textContent=o.title||"CIRE";
