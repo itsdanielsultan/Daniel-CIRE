@@ -1612,7 +1612,7 @@ LESSONS.forEach((l,i)=>{ if(chStart[l.ch]===undefined) chStart[l.ch]=i; chEnd[l.
 const S = {
   lessonDone:{}, starLesson:{}, starQ:{}, qStats:{}, mistakes:{}, cardKnown:{}, srs:{},
   lastLesson:0, sessions:0,
-  set:{ shuffle:true, dark:false, ts:1, speedClock:true, examClock:true, examShuffle:true }
+  set:{ shuffle:true, dark:false, ts:null, speedClock:true, examClock:true, examShuffle:true }
 };
 const KEY="cire:v2";
 /* Persistence layer. Tries, in order: the host page's storage bridge
@@ -1673,15 +1673,22 @@ function normalise(){
     if(!S[k] || typeof S[k]!=="object") S[k]={};
   });
   if(!S.set || typeof S.set!=="object") S.set={};
-  const d={shuffle:true,dark:false,ts:1,speedClock:true,examClock:true,examShuffle:true};
+  const d={shuffle:true,dark:false,ts:null,speedClock:true,examClock:true,examShuffle:true};
   for(const k in d) if(S.set[k]===undefined) S.set[k]=d[k];
+}
+/* Until the reader picks a size, a wide screen with the sidebar showing gets
+   Large and a phone gets Default, because the same scale reads very
+   differently across the two. An explicit choice always wins. */
+function autoScale(){
+  try{ return (window.innerWidth||1200)>=1000 ? 2 : 1; }catch(e){ return 1; }
+}
+function effectiveScale(){
+  return (S.set.ts===null||S.set.ts===undefined) ? autoScale() : S.set.ts;
 }
 function applySettings(){
   document.body.classList.toggle("dark",!!S.set.dark);
-  document.body.classList.remove("ts0","ts2","ts3");
-  if(S.set.ts===0) document.body.classList.add("ts0");
-  if(S.set.ts===2) document.body.classList.add("ts2");
-  if(S.set.ts===3) document.body.classList.add("ts3");
+  document.body.classList.remove("ts0","ts1","ts2","ts3");
+  document.body.classList.add("ts"+effectiveScale());
 }
 
 /* ================= FEEDBACK ================= */
@@ -3000,7 +3007,12 @@ function renderSettings(){
   app.innerHTML=
   '<div class="block"><p class="sys soft" style="margin-bottom:10px">Interface scale</p>'+
   '<div class="seg" id="ts">'+[["0","Compact"],["1","Default"],["2","Large"],["3","Largest"]].map(function(o){
-    return '<button data-ts="'+o[0]+'" class="'+(S.set.ts==+o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>'+
+    return '<button data-ts="'+o[0]+'" class="'+(effectiveScale()==+o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div>'+
+  '<p class="sys soft" style="margin-top:10px">'+
+    ((S.set.ts===null||S.set.ts===undefined)
+      ? "Chosen automatically: Large on a wide screen, Default on a phone."
+      : "Set by you. <button id=\'tsauto\' style=\'text-decoration:underline\'>Go back to automatic</button>")+
+  '</p></div>'+
   '<div class="block">'+
   '<label class="tog"><input type="checkbox" id="dark" '+(S.set.dark?"checked":"")+'><span class="sys">Dark mode</span></label>'+
   '<label class="tog"><input type="checkbox" id="shuf" '+(S.set.shuffle?"checked":"")+'><span class="sys">Shuffle the answer order</span></label>'+
@@ -3015,6 +3027,8 @@ function renderSettings(){
   '<button class="btn alt" id="reset" style="margin-top:12px">Erase all progress</button></div>';
   document.querySelectorAll("[data-ts]").forEach(function(b){
     b.addEventListener("click",function(){ S.set.ts=+b.dataset.ts; applySettings(); save(); renderSettings(); });});
+  const tsa=document.getElementById("tsauto");
+  if(tsa) tsa.addEventListener("click",function(){ S.set.ts=null; applySettings(); save(); renderSettings(); });
   document.getElementById("dark").addEventListener("change",function(e){ S.set.dark=e.target.checked; applySettings(); save(); renderSettings(); });
   document.getElementById("shuf").addEventListener("change",function(e){ S.set.shuffle=e.target.checked; save(); });
   document.getElementById("sclk").addEventListener("change",function(e){ S.set.speedClock=e.target.checked; save(); });
@@ -3087,6 +3101,16 @@ function sheetOpen(){ const s=document.getElementById("sheet"); return !!(s&&s.c
   if(mb) mb.addEventListener("click",function(){ sheetOpen()?closeSheet():openSheet(); });
   if(sc) sc.addEventListener("click",closeSheet);
   if(cl) cl.addEventListener("click",closeSheet);
+})();
+(function(){
+  let last=autoScale();
+  try{
+    window.addEventListener("resize",function(){
+      if(S.set.ts!==null && S.set.ts!==undefined) return;
+      const now=autoScale();
+      if(now!==last){ last=now; applySettings(); }
+    });
+  }catch(e){}
 })();
 bBack.addEventListener("click",goBack);
 /* a phone can kill a backgrounded tab without warning: commit immediately */
