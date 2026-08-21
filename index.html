@@ -404,7 +404,7 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
     background:var(--fg);color:var(--bg);padding:22px 0;
   }
   .side .wordmark{font-size:20px;font-weight:500;letter-spacing:-.02em;padding:0 20px 4px;}
-  .side .wordsub{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  .side .wordsub{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;line-height:1.7;
     padding:0 20px 18px;color:rgba(150,150,150,1);}
   .navitem{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
     padding:12px 20px;font-size:14px;color:var(--bg);}
@@ -413,10 +413,7 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   .navitem i{width:9px;height:9px;border-radius:50%;background:currentColor;display:block;opacity:.5;}
   .navitem.on i{opacity:1;}
   .navsep{height:1px;background:rgba(127,127,127,.4);margin:14px 20px;}
-  .legend{display:flex;gap:4px;padding:2px 20px 12px;}
-.legend i{flex:1;height:16px;display:block;opacity:.35;}
-.legend i.on{opacity:1;}
-.sidefoot{padding:8px 20px 20px;font-size:11px;line-height:1.7;color:rgba(150,150,150,1);}
+  .sidefoot{padding:8px 20px 20px;font-size:11px;line-height:1.7;color:rgba(150,150,150,1);}
   .sidebarmeter{height:5px;background:rgba(127,127,127,.4);margin:8px 20px 4px;}
   .sidebarmeter i{display:block;height:100%;background:var(--bg);}
   .band{display:none;}
@@ -494,6 +491,37 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   .cols{display:block;}
   .bullet{border:1px solid #000;}
 }
+/* ---------- mobile section menu ---------- */
+.sheet-scrim{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:44;
+  opacity:0;pointer-events:none;transition:opacity 220ms var(--ease);
+}
+.sheet-scrim.on{opacity:1;pointer-events:auto;}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:45;
+  background:var(--fg);color:var(--bg);
+  transform:translateY(101%);transition:transform 260ms var(--ease);
+  padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  max-height:92vh;overflow-y:auto;
+}
+.sheet.on{transform:translateY(0);}
+.sheet-grip{width:38px;height:4px;border-radius:2px;background:rgba(127,127,127,.6);margin:10px auto 4px;}
+.sheet-head{padding:6px 18px 10px;border-bottom:1px solid rgba(127,127,127,.4);}
+.sheet-title{font-size:calc(17px * var(--s));font-weight:500;letter-spacing:-.01em;display:block;}
+.sheet-sub{font-size:calc(10.5px * var(--s));letter-spacing:.1em;text-transform:uppercase;color:rgba(150,150,150,1);}
+.sheet .navitem{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:calc(11px * var(--s)) 18px;min-height:calc(46px * var(--s));font-size:calc(14.5px * var(--s));color:var(--bg);
+  border-bottom:1px solid rgba(127,127,127,.22);
+}
+.sheet .navitem i{width:9px;height:9px;border-radius:50%;background:currentColor;display:block;opacity:.5;}
+.sheet .navitem.on{background:rgba(127,127,127,.3);font-weight:500;}
+.sheet .navitem.on i{opacity:1;}
+.sheet-close{
+  width:100%;padding:calc(13px * var(--s)) 18px;color:var(--bg);
+  font-size:calc(12px * var(--s));letter-spacing:.09em;text-transform:uppercase;
+}
+@media (min-width:1000px){ .sheet,.sheet-scrim,#bMenu{display:none !important;} }
 #toast{
   position:fixed;left:50%;transform:translateX(-50%) translateY(20px);
   bottom:calc(var(--bar) + 16px);z-index:60;background:var(--fg);color:var(--bg);
@@ -513,10 +541,9 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
 
   <aside class="side" id="side">
     <div class="wordmark">CIRE</div>
-    <div class="wordsub">Study system</div>
+    <div class="wordsub">Study system<br>by Daniel Sultan</div>
     <nav id="nav"></nav>
     <div class="navsep"></div>
-    <div class="legend" id="legend"></div>
     <div class="sidebarmeter"><i id="sideMeter" style="width:0"></i></div>
     <div class="sidefoot" id="sideFoot"></div>
   </aside>
@@ -528,6 +555,7 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
         <span class="name" id="bName">CIRE</span>
         <span class="count" id="bCount"></span>
         <button class="bandbtn" id="bStar" aria-label="Bookmark">&#9734;</button>
+        <button class="bandbtn" id="bMenu" aria-label="Menu">&#9776;</button>
       </div>
       <div class="stripe"><i id="bFill"></i></div>
     </div>
@@ -541,11 +569,21 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
     <div class="pane" id="pane">
       <main id="app"></main>
       <div id="live" class="sr" role="status" aria-live="polite" aria-atomic="true"></div>
-      <p class="colophon">Built from the CIRO CIRE syllabus (January 2025), the published practice exam and the guide for studying. Study aid only. Where anything here differs from CIRO's rules, guidance or syllabus, CIRO governs.</p>
+      <p class="colophon">Designed and built by Daniel Sultan. The course, the wording, the questions and the way it all fits together are mine. The rules themselves come from CIRO, drawing on the CIRE syllabus (January 2025), the published practice exam and the guide for studying. This is a study aid. Where anything here differs from CIRO's own rules, guidance or syllabus, CIRO governs.</p>
     </div>
   </div>
 </div>
 
+<div class="sheet-scrim" id="scrim"></div>
+<nav class="sheet" id="sheet" aria-label="Sections">
+  <div class="sheet-grip"></div>
+  <div class="sheet-head">
+    <span class="sheet-title">CIRE</span>
+    <span class="sheet-sub" id="sheetProgress"></span>
+  </div>
+  <div id="sheetNav"></div>
+  <button class="sheet-close" id="sheetClose">Close</button>
+</nav>
 <div id="toast" role="status"><span id="toastMsg"></span><button id="toastAct" class="hide"></button></div>
 <div class="foot-band" id="footband"></div>
 
@@ -1564,7 +1602,7 @@ const app=document.getElementById("app"), footband=document.getElementById("foot
       dTitle=document.getElementById("dTitle"), dCount=document.getElementById("dCount"),
       dStar=document.getElementById("dStar"), clock=document.getElementById("clock"),
       clockFill=document.getElementById("clockFill"), navEl=document.getElementById("nav"),
-      legend=document.getElementById("legend"),
+
       sideMeter=document.getElementById("sideMeter"), sideFoot=document.getElementById("sideFoot");
 
 const chStart={}, chEnd={};
@@ -1777,11 +1815,11 @@ function recordQ(el,right,qi){
 /* header + nav */
 const NAV=[["home","Home"],["map","Course"],["cards","Flashcards"],["drill","Drill"],
            ["speed","Speed round"],["exam","Mock exam"],["stats","Progress"],
-           ["glossary","Glossary"],["settings","Settings"]];
+           ["glossary","Glossary"],["about","About"],["settings","Settings"]];
 const PARENT={map:"home",lesson:"map",chapend:"map",cards:"home",cardrun:"cards",
   drill:"home",drillrun:"drill",drillres:"drill",speed:"home",speedrun:"speed",speedres:"speed",
   exam:"home",examrun:"exam",examres:"exam",examreview:"examres",
-  stats:"home",glossary:"home",settings:"home",mistakes:"stats",starred:"stats"};
+  stats:"home",glossary:"home",about:"home",settings:"home",mistakes:"stats",starred:"stats"};
 const NAVIDS={};
 NAV.forEach(function(n){ NAVIDS[n[0]]=1; });
 function section(v){
@@ -1792,7 +1830,7 @@ function section(v){
 function go(v){
   ({home:renderHome,map:renderMap,cards:renderCardsStart,drill:renderDrillStart,
     speed:renderSpeedStart,exam:renderExamStart,stats:renderStats,glossary:renderGlossary,
-    settings:renderSettings,mistakes:renderMistakes,starred:renderStarred}[v]||renderHome)();
+    settings:renderSettings,about:renderAbout,mistakes:renderMistakes,starred:renderStarred}[v]||renderHome)();
 }
 function goBack(){ stopTimer(); go(PARENT[view]||"home"); toTop(); }
 function paintStar(o){
@@ -1828,11 +1866,17 @@ function chrome(o){
   navEl.querySelectorAll("[data-nav]").forEach(function(b){
     b.addEventListener("click",function(){ stopTimer(); go(b.dataset.nav); toTop(); });
   });
-  legend.innerHTML=Object.keys(CH).map(function(k){
-    const s=chStart[k],e=chEnd[k]; let d=0;
-    for(let i=s;i<=e;i++) if(S.lessonDone[i]) d++;
-    return '<i class="'+(d===e-s+1?"on":"")+'" style="background:'+CH[k][0]+'" title="Chapter '+k+'"></i>';
-  }).join("");
+  const sheetNav=document.getElementById("sheetNav");
+  if(sheetNav){
+    sheetNav.innerHTML=NAV.map(function(n){
+      return '<button class="navitem'+(n[0]===cur?" on":"")+'" data-snav="'+n[0]+'"><i></i>'+n[1]+'</button>';
+    }).join("");
+    sheetNav.querySelectorAll("[data-snav]").forEach(function(b){
+      b.addEventListener("click",function(){ closeSheet(); stopTimer(); go(b.dataset.snav); toTop(); });
+    });
+  }
+  const sp=document.getElementById("sheetProgress");
+  if(sp) sp.textContent="Course "+Object.keys(S.lessonDone).length+" of "+LESSONS.length+" lessons";
   sideMeter.style.width=pctDone()+"%";
   sideFoot.textContent="Course "+Object.keys(S.lessonDone).length+" of "+LESSONS.length+" lessons"+
     (Object.keys(S.mistakes).length?" \u00b7 "+Object.keys(S.mistakes).length+" questions to review":"");
@@ -1869,12 +1913,15 @@ function renderHome(){
     '<span class="t"><strong>Mock exam</strong><span>Full paper, no feedback until you submit, then a complete review.</span></span><span class="n">100</span></button>'+
   (mist?'<button class="plate" data-go="mistakes">'+bul("!","var(--warn)","#fff")+
     '<span class="t"><strong>Your mistakes</strong><span>Every question you have got wrong, kept until you get it right.</span></span><span class="n">'+mist+'</span></button>':'')+
+  '<button class="plate" data-go="about">'+bul("&#9679;","var(--fg)","var(--bg)")+
+    '<span class="t"><strong>About this site</strong><span>Who made it, how to use it, and where the rules come from</span></span></button>'+
   '<div class="block"><p class="sys soft" style="margin-bottom:8px">New to finance?</p>'+
   '<p style="font-size:.95em;line-height:1.5">Do the course first, in order. It starts from what investing actually is and builds one idea at a time. Everything else here assumes that groundwork.</p></div>';
   app.querySelectorAll("[data-go]").forEach(function(b){
     b.addEventListener("click",function(){
       const g=b.dataset.go;
       if(g==="continue"){ ctx.li=firstUnfinished(); renderLesson(); }
+      else if(g==="about") renderAbout();
       else go(g);
       toTop();
     });
@@ -2912,6 +2959,39 @@ function renderGlossary(){
   input.addEventListener("input",function(){ draw(input.value); });
 }
 
+
+/* ================= ABOUT ================= */
+function renderAbout(){
+  view="about"; running(false); split(false); stopTimer(); clearFoot(); neutral();
+  chrome({title:"About"});
+  app.innerHTML=
+  '<div class="block">'+
+    '<p class="sys soft" style="margin-bottom:10px">About</p>'+
+    '<h2 class="lesson-t">Hi, I\'m Daniel Sultan. I made this.</h2>'+
+    '<p style="line-height:1.6">I\'m 18 and I work in financial sales in the Greater Toronto Area. To move up in this industry you have to pass the CIRE, which is short for the Canadian Investment Regulatory Exam. It is about the rules people in finance have to follow.</p>'+
+    '<p style="line-height:1.6;margin-top:12px">To study for it you get three PDFs and nothing else. I kept getting stuck, because they use words like <b>dealer</b> and <b>prospectus</b> without ever saying what those words mean. The rules are not hard. Nobody was explaining them.</p>'+
+    '<p style="line-height:1.6;margin-top:12px">So I made this. My test was whether my eight year old brother could open it, follow it, and slowly get good at it. That is why it starts at "what is investing" and adds one small idea at a time.</p>'+
+    '<p style="line-height:1.6;margin-top:12px"><a href="https://www.linkedin.com/feed/update/urn:li:activity:7494957770144776192/" target="_blank" rel="noopener" style="color:inherit">Read the full story of how I built it &#8594;</a></p>'+
+  '</div>'+
+  '<div class="block">'+
+    '<p class="sys soft" style="margin-bottom:10px">How to use it</p>'+
+    '<p style="line-height:1.6">Start with the <b>course</b> and go in order. Each lesson explains one idea, then asks you one question about it. After that, use the <b>flashcards</b> to keep the words in your head, the <b>drill</b> for exam questions, the <b>speed round</b> when you want it to feel like a game, and the <b>mock exam</b> when you think you are ready.</p>'+
+    '<p style="line-height:1.6;margin-top:12px">No account needed. Nothing is sent anywhere. It all saves on your own device.</p>'+
+  '</div>'+
+  '<div class="block">'+
+    '<p class="sys soft" style="margin-bottom:10px">What is mine and what is CIRO\'s</p>'+
+    '<p style="line-height:1.6">The idea, the design, the chapters and their order, the plain English explanations, the examples, the wording of the questions and every mode in here are mine.</p>'+
+    '<p style="line-height:1.6;margin-top:12px">The rules themselves come from CIRO, the Canadian Investment Regulatory Organization. I worked from their CIRE syllabus (January 2025), their practice exam and their study guide, and some questions follow the shape of theirs closely because the exam tests those exact points. This is a study aid. If anything here disagrees with CIRO, they are right and I am wrong.</p>'+
+  '</div>'+
+  '<div class="block">'+
+    '<p class="sys soft" style="margin-bottom:10px">Contact</p>'+
+    '<p style="line-height:1.6">Found a mistake, or something explained badly? Tell me and I will fix it.</p>'+
+    '<p style="line-height:1.6;margin-top:10px">Daniel Sultan<br>thedanielsultan@gmail.com<br>investmentregulation.ca</p>'+
+  '</div>'+
+  '<div class="block"><button class="btn alt" id="home">Back</button></div>';
+  document.getElementById("home").addEventListener("click",function(){ renderHome(); toTop(); });
+}
+
 /* ================= SETTINGS ================= */
 function renderSettings(){
   view="settings"; running(false); split(false); stopTimer(); clearFoot();
@@ -2970,7 +3050,7 @@ function renderPrintable(){
 document.addEventListener("keydown",function(e){
   if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
   const k=e.key;
-  if(k==="Escape"){ e.preventDefault(); goBack(); return; }
+  if(k==="Escape"){ e.preventDefault(); if(sheetOpen()) closeSheet(); else goBack(); return; }
   if((k==="h"||k==="H") && view!=="glossary"){ e.preventDefault(); stopTimer(); renderHome(); toTop(); return; }
   if(k==="Enter"||k===" "){
     if(view==="cardrun"){ e.preventDefault(); flipCard(); return; }
@@ -2992,6 +3072,22 @@ document.addEventListener("keydown",function(e){
   const picks=app.querySelectorAll(".opt:not(:disabled)");
   if(picks.length===4){ e.preventDefault(); picks[idx].click(); }
 });
+function openSheet(){
+  const s=document.getElementById("sheet"), sc=document.getElementById("scrim");
+  if(s) s.classList.add("on"); if(sc) sc.classList.add("on");
+  haptic("tick");
+}
+function closeSheet(){
+  const s=document.getElementById("sheet"), sc=document.getElementById("scrim");
+  if(s) s.classList.remove("on"); if(sc) sc.classList.remove("on");
+}
+function sheetOpen(){ const s=document.getElementById("sheet"); return !!(s&&s.className.indexOf("on")>=0); }
+(function(){
+  const mb=document.getElementById("bMenu"), sc=document.getElementById("scrim"), cl=document.getElementById("sheetClose");
+  if(mb) mb.addEventListener("click",function(){ sheetOpen()?closeSheet():openSheet(); });
+  if(sc) sc.addEventListener("click",closeSheet);
+  if(cl) cl.addEventListener("click",closeSheet);
+})();
 bBack.addEventListener("click",goBack);
 /* a phone can kill a backgrounded tab without warning: commit immediately */
 try{ document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden") saveNow(); }); }catch(e){}
