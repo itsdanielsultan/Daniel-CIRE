@@ -505,6 +505,11 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   .bullet{border:1px solid #000;}
 }
 /* ---------- mobile section menu ---------- */
+html.sheet-open{overflow:hidden;overscroll-behavior:none;}
+body.sheet-open{
+  position:fixed;left:0;right:0;width:100%;overflow:hidden;
+  overscroll-behavior:none;
+}
 .sheet-scrim{
   position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:44;
   opacity:0;pointer-events:none;transition:opacity 220ms var(--ease);
@@ -515,7 +520,8 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
   background:var(--sidebar-bg);color:var(--sidebar-fg);
   transform:translateY(101%);transition:transform 260ms var(--ease);
   padding-bottom:calc(8px + env(safe-area-inset-bottom));
-  max-height:92vh;overflow-y:auto;
+  max-height:92vh;max-height:92dvh;overflow-y:auto;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
 }
 .sheet.on{transform:translateY(0);}
 .sheet-grip{width:38px;height:4px;border-radius:2px;background:rgba(127,127,127,.6);margin:10px auto 4px;}
@@ -569,7 +575,7 @@ input[type=text]{font:inherit;font-size:1em;width:100%;min-height:calc(52px * va
         <span class="name" id="bName">CIRE</span>
         <span class="count" id="bCount"></span>
         <button class="bandbtn" id="bStar" aria-label="Bookmark">&#9734;</button>
-        <button class="bandbtn" id="bMenu" aria-label="Menu">&#9776;</button>
+        <button class="bandbtn" id="bMenu" aria-label="Menu" aria-expanded="false" aria-controls="sheet">&#9776;</button>
       </div>
       <div class="stripe"><i id="bFill"></i></div>
     </div>
@@ -3114,14 +3120,27 @@ document.addEventListener("keydown",function(e){
   const picks=app.querySelectorAll(".opt:not(:disabled)");
   if(picks.length===4){ e.preventDefault(); picks[idx].click(); }
 });
+let sheetScrollY=0;
 function openSheet(){
   const s=document.getElementById("sheet"), sc=document.getElementById("scrim");
+  if(!s || s.classList.contains("on")) return;
+  sheetScrollY=window.scrollY||window.pageYOffset||0;
+  document.documentElement.classList.add("sheet-open");
+  document.body.classList.add("sheet-open");
+  document.body.style.top=(-sheetScrollY)+"px";
   if(s) s.classList.add("on"); if(sc) sc.classList.add("on");
+  const mb=document.getElementById("bMenu"); if(mb) mb.setAttribute("aria-expanded","true");
   haptic("tick");
 }
 function closeSheet(){
   const s=document.getElementById("sheet"), sc=document.getElementById("scrim");
+  if(!s || !s.classList.contains("on")) return;
   if(s) s.classList.remove("on"); if(sc) sc.classList.remove("on");
+  document.documentElement.classList.remove("sheet-open");
+  document.body.classList.remove("sheet-open");
+  document.body.style.top="";
+  window.scrollTo(0,sheetScrollY);
+  const mb=document.getElementById("bMenu"); if(mb) mb.setAttribute("aria-expanded","false");
 }
 function sheetOpen(){ const s=document.getElementById("sheet"); return !!(s&&s.className.indexOf("on")>=0); }
 (function(){
