@@ -3102,7 +3102,9 @@ document.addEventListener("keydown",function(e){
   if(k==="Enter"||k===" "){
     if(view==="cardrun"){ e.preventDefault(); flipCard(); return; }
     if(view==="speedrun" && document.getElementById("ready")){ e.preventDefault(); openAnswers(); return; }
-    const n=document.getElementById("next")||document.getElementById("go");
+    const n=view==="chapend"
+      ? document.getElementById("nextch")||document.getElementById("todrill")
+      : document.getElementById("next")||document.getElementById("go");
     if(n){ e.preventDefault(); n.click(); }
     return;
   }
